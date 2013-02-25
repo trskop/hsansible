@@ -1,0 +1,111 @@
+name:                   hsansible
+version:                0.2.0.0
+synopsis:               Simple framework for building Ansible modules.
+description:
+  Ansible <http://ansible.cc> is a software for deploying, managing, and
+  orchestrating computer systems over SSH. It has a modular design that allows
+  users to create modules for various parts of the system. This package
+  provides a framework that allows building Ansible modules in Haskell.
+license:                BSD3
+license-file:           LICENSE
+author:                 Peter Trško
+maintainer:             peter.trsko@gmail.com
+copyright:              (c) 2013 Peter Trško
+homepage:               https://github.com/trskop/hsansible
+bug-reports:            https://github.com/trskop/hsansible/issues
+stability:              experimental
+category:               SystemAdministration
+build-type:             Simple
+cabal-version:          >=1.8
+
+data-files:
+    data/ansible-module.st
+  , data/hsansible-test-module.yaml
+
+extra-source-files:
+    README.md
+  , doc/make-ansible-module.1.md
+
+flag pedantic
+  description:
+    Pass additional flags, including -Werror, to GHC during compilation.
+  default: False
+
+flag test-module
+  description: Don't build Ansible test module.
+  default: False
+
+library
+  hs-source-dirs:       src
+  exposed-modules:
+      Ansible
+    , Ansible.Arguments
+    , Ansible.Failure
+  -- other-modules:
+  build-depends:
+      aeson >= 0.4.0.0
+      -- ^ Function decode was introduced in version 0.4.0.0.
+    , attoparsec >= 0.8.6.1
+      -- ^ Same constraint as aeson has (last checked version of aeson was
+      -- 0.6.1.0).
+    , base == 4.5.*
+    , bytestring
+    , case-insensitive == 0.4.* || == 1.*
+    , text >= 0.11.1.1 && < 1
+      -- ^ Version 0.11.1.0 had a build failure.
+    , transformers >= 0.2.0.0
+      -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
+executable hsansible-test-module
+  if !flag(test-module)
+    buildable: False
+
+  hs-source-dirs:       src
+  main-is:              hsansible-test-module.hs
+  other-modules:
+      Ansible
+    , Ansible.Arguments
+    , Ansible.Failure
+  build-depends:
+      aeson >= 0.4.0.0
+      -- ^ Function decode was introduced in version 0.4.0.0.
+    , attoparsec >= 0.8.6.1
+      -- ^ Same constraint as aeson has (last checked version of aeson was
+      -- 0.6.1.0).
+    , base == 4.5.*
+    , bytestring
+    , case-insensitive == 0.4.* || == 1.*
+    , text >= 0.11.1.1 && < 1
+      -- ^ Version 0.11.1.0 had a build failure.
+    , transformers >= 0.2.0.0
+      -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
+executable make-ansible-module
+  hs-source-dirs:       src
+  main-is:              make-ansible-module.hs
+  other-modules:        Paths_hsansible
+  build-depends:
+      base == 4.5.*
+    , base64-bytestring == 0.1.* || == 1.0.*
+      -- ^ Used interface of base64-bytestring hadn't changed since the start.
+    , bytestring
+    , HStringTemplate == 0.7.*
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
+source-repository head
+  type:                 git
+  location:             git://github.com/trskop/hsansible.git

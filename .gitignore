@@ -1,3 +1,9 @@
+# Linux
+.*
+!.gitignore
+*~
+
+# Haskell
 dist
 cabal-dev
 *.o

@@ -1,0 +1,24 @@
+---
+module: hsansible-test-module
+short_description: >
+    This is a Haskell test module wrapped in Python bootstraping code.
+description:
+    - This module is intended as a test that the Haskell module infrastructure is sound.
+version_added: 0.1.0.0
+author: Peter Trsko
+notes:
+    - No real functionality and it should stay that way.
+requirements:
+    - It might be necessary to install libgmp on the target system.
+options:
+    fail:
+        description:
+            - If present, regardles of it's value, the module will fail with properly formated JSON message as a result.
+        required: false
+        default: null
+        version_added: 0.1.0.0
+examples:
+    - code: test-module [optional-other-arguments]
+      description: Run module with optionally passed arguments, these are then part of the JSON response.
+    - code: test-module failed [optional-other-arguments]
+      description: Module will fail with properly formated failure message.
