@@ -32,7 +32,7 @@ flag pedantic
   default: False
 
 flag test-module
-  description: Don't build Ansible test module.
+  description: Build Ansible test module.
   default: False
 
 library
