@@ -24,7 +24,7 @@ module Ansible.Arguments
     -- ** Standard arguments parser
     , stdArgumentsParser
 
-    -- * Helper functions
+    -- * Utility functions
     , castBool
     )
     where
@@ -36,7 +36,7 @@ import Data.Word (Word8)
 
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Error (ErrorT)
-import Data.Aeson ((.=), ToJSON)
+import Data.Aeson ((.=), ToJSON(..))
 import qualified Data.Aeson as JSON
 import Data.Attoparsec (Parser, satisfy, word8)
 import Data.Attoparsec.Char8 (isDigit_w8, isSpace_w8)
@@ -74,7 +74,6 @@ readArgumentsFile fp = do
 
 -- }}} Generic argument parsing interface -------------------------------------
 
-
 -- {{{ Concrete parsing implementations ---------------------------------------
 -- {{{ Concrete parsing implementations: RawArguments -------------------------
 
@@ -87,13 +86,13 @@ instance ParseArguments RawArguments where
     parseArguments = Right . RawArguments . Text.decodeUtf8
 
 instance ToJSON RawArguments where
-    toJSON RawArguments{..} = JSON.object ["rawArguments" .= rawArguments]
+    toJSON RawArguments{..} = toJSON rawArguments
 
 -- }}} Concrete parsing implementations: RawArguments -------------------------
 
 -- {{{ Concrete parsing implementations: StdArguments -------------------------
 
--- | Wrapper for list of simple key=value pairs where value is optional. This
+-- | Wrapper for list of simple @key=value@ pairs where value is optional. This
 -- is the most common way how modules interpret their arguments.
 newtype StdArguments = StdArguments {stdArguments :: [(Text, Maybe Text)]}
     deriving (Show)
@@ -104,9 +103,7 @@ instance ParseArguments StdArguments where
         Just std -> Right $ StdArguments std
 
 instance ToJSON StdArguments where
-    toJSON StdArguments{..} = JSON.object ["arguments" .= jsonize stdArguments]
-      where
-        jsonize = JSON.object . map (uncurry (.=))
+    toJSON StdArguments{..} = JSON.object $ map (uncurry (.=)) stdArguments
 
 -- }}} Concrete parsing implementations: StdArguments -------------------------
 
@@ -172,11 +169,6 @@ stdArgumentsParser = option [] $ keyValuePair `sepBy1` many1 whiteSpace
         (Attoparsec.takeWhile1 ((/= q) <&&> (/= 92)) <|> escape)
 
     simpleValue :: Parser ByteString
-    {-
-    simpleValue = (BS.append . BS.singleton)
-        <$> satisfy ((not . isSpace_w8) <&&> (/= 34) <&&> (/= 39))
-        <*> Attoparsec.takeWhile (not . isSpace_w8)
-    -}
     simpleValue = BS.concat <$> many1
         (Attoparsec.takeWhile1
             ((not . isSpace_w8) <&&> (/= 34) <&&> (/= 39) <&&> (/= 92))
@@ -213,10 +205,10 @@ stdArgumentsParser = option [] $ keyValuePair `sepBy1` many1 whiteSpace
 -- }}} Concrete parsing implementations: Standard arguments parser ------------
 -- }}} Concrete parsing implementations ---------------------------------------
 
--- {{{ Helper functions -------------------------------------------------------
+-- {{{ Utility functions ------------------------------------------------------
 
 -- | As a convinience boolean values are passed as string. This function tries,
--- hence the 'Maybe', as a 'Bool'. It understands these values:
+-- hence the 'Maybe', to interpret it as a 'Bool'. It understands these values:
 --
 -- * "yes"/"no"
 --
@@ -235,4 +227,4 @@ castBool = castBool' . CI.mk
       | t == "0" = Just False
       | otherwise = Nothing
 
--- }}} Helper functions -------------------------------------------------------
+-- }}} Utility functions ------------------------------------------------------

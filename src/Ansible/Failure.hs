@@ -33,8 +33,8 @@ mkFailure :: String -> Failure
 mkFailure msg = Failure{failed = True, msg = msg}
 
 instance E.Error Failure where
-    noMsg = Failure{failed = True, msg = ""}
-    strMsg msg = Failure{failed = True, msg = msg}
+    noMsg = mkFailure ""
+    strMsg = mkFailure
 
 -- | Prints the message prefixed with "Failure: ".
 instance Show Failure where
