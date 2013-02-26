@@ -28,13 +28,16 @@ module Ansible.Arguments
 
     -- * Utility functions
     , castBool
+    , fromPairs
     )
     where
 
 -- {{{ Imports ----------------------------------------------------------------
 
 import Control.Applicative (Applicative(..), Alternative((<|>)), (<$>), liftA2)
+import Control.Monad (liftM2)
 import Data.Data (Data, Typeable)
+import Data.Monoid (Monoid(..))
 import Data.Word (Word8)
 
 import Control.Monad.IO.Class (MonadIO(..))
@@ -229,5 +232,21 @@ castBool = castBool' . CI.mk
       | t == "1" = Just True
       | t == "0" = Just False
       | otherwise = Nothing
+
+-- | This function can be used to construct data types, that have Monoid
+-- instance, from key-value pairs. So if we have some data type @Config@ that
+-- has a 'Monoid' instance, then we can have:
+--
+-- > parseArguments >=> fromPairs pairToConfig . stdArguments
+-- >     :: ByteString -> Either String Config
+--
+-- Above example requires 'Monad' instance for 'Either' which is defined in
+-- @Control.Monad.Instances@.
+fromPairs
+    :: (Monad m, Monoid a)
+    => (Text -> Maybe Text -> m a)
+    -> [(Text, Maybe Text)]
+    -> m a
+fromPairs f = foldl (\ x -> liftM2 mappend x . uncurry f) $ return mempty
 
 -- }}} Utility functions ------------------------------------------------------
