@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 -- |
@@ -8,7 +9,8 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (OverloadedStrings, RecordWildCards)
+-- Portability:  non-portable (DeriveDataTypeable, OverloadedStrings,
+--               RecordWildCards)
 --
 -- Interface for parsing Ansible module arguments.
 module Ansible.Arguments
@@ -32,6 +34,7 @@ module Ansible.Arguments
 -- {{{ Imports ----------------------------------------------------------------
 
 import Control.Applicative (Applicative(..), Alternative((<|>)), (<$>), liftA2)
+import Data.Data (Data, Typeable)
 import Data.Word (Word8)
 
 import Control.Monad.IO.Class (MonadIO(..))
@@ -80,7 +83,7 @@ readArgumentsFile fp = do
 -- | This newtype allows modules to have access to unparsed content of
 -- arguments file.
 newtype RawArguments = RawArguments {rawArguments :: Text}
-    deriving (Show)
+    deriving (Data, Eq, Show, Read, Typeable)
 
 instance ParseArguments RawArguments where
     parseArguments = Right . RawArguments . Text.decodeUtf8
@@ -95,7 +98,7 @@ instance ToJSON RawArguments where
 -- | Wrapper for list of simple @key=value@ pairs where value is optional. This
 -- is the most common way how modules interpret their arguments.
 newtype StdArguments = StdArguments {stdArguments :: [(Text, Maybe Text)]}
-    deriving (Show)
+    deriving (Data, Eq, Show, Read, Typeable)
 
 instance ParseArguments StdArguments where
     parseArguments bs = case parseStdArguments bs of
