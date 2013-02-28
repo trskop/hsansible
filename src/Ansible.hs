@@ -41,6 +41,8 @@ module Ansible
 
     , castBool
     , fromPairs
+    , thenFail
+    , otherwiseFail
     )
     where
 
@@ -48,6 +50,7 @@ module Ansible
 
 import Control.Applicative ((<$>))
 import Control.Monad (when)
+import Data.Maybe (isNothing)
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 
@@ -83,9 +86,8 @@ moduleMain ansibleModule = do
         complexArgs <- case drop 1 args of
             [f] -> do
                 x <- liftIO $ JSON.decode <$> BS.readFile f
-                case x of
-                    Nothing -> fail "Parsing of complex arguments failed."
-                    _ -> return x
+                isNothing x `thenFail` "Parsing of complex arguments failed."
+                return x
             _ -> return Nothing -- No complex arguments were passed
         ansibleModule moduleArgs complexArgs
     case result of
@@ -94,3 +96,15 @@ moduleMain ansibleModule = do
   where
     printJson :: (MonadIO m, ToJSON a) => a -> m ()
     printJson = liftIO . BS.putStrLn . JSON.encode . JSON.toJSON
+
+-- {{{ Utility functions ------------------------------------------------------
+
+-- | Call 'Monad'.'fail', with specified message, when predicate is 'True'.
+thenFail :: Monad m => Bool -> String -> m ()
+thenFail p = when p . fail
+
+-- | Call 'Monad'.'fail', with specified message, when predicate is 'False'.
+otherwiseFail :: Monad m => Bool -> String -> m ()
+otherwiseFail = thenFail . not
+
+-- }}} Utility functions ------------------------------------------------------
