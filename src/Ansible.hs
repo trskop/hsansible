@@ -14,8 +14,10 @@
 module Ansible
     (
     -- * Ansible module
+
       Module
     , moduleMain
+
 
     -- * Errors/failures
 
@@ -24,14 +26,21 @@ module Ansible
     -- for creating and throwing errors.
     , Failure()
 
+
     -- * Module arguments
 
-    -- | Most Ansible modules conform to simple key=value format of its
+    -- | Most Ansible modules conform to simple @key=value@ format of its
     -- arguments and it's the format we use here. User may use 'StdArguments',
     -- that provide just parsed key=value pairs, or build his/her own type.
     , ParseArguments(..)
     , RawArguments(..)
     , StdArguments(..)
+
+
+    -- * Utility functions
+
+    , castBool
+    , fromPairs
     )
     where
 
@@ -68,7 +77,7 @@ moduleMain
     -> m ()
 moduleMain ansibleModule = do
     result <- Error.runErrorT $ do
-        args <-  liftIO $ take 2 <$> getArgs
+        args <- liftIO $ take 2 <$> getArgs
         when (null args) $ fail "Arguments file wasn't passed."
         moduleArgs <- readArgumentsFile $ head args
         complexArgs <- case drop 1 args of
