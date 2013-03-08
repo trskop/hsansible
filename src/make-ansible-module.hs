@@ -75,10 +75,7 @@ printHelp h Config{..} = do
 -- | Description of program options.
 options :: [OptDescr (Endo Config, First (Config -> IO ()))]
 options =
-    [ Option "t" ["template"] (ReqArg (set tmplFile) "TEMPLATE_FILE")
-       "Set custom template instead of the default."
-
-    , Option "h" ["help"] (NoArg $ action printHelp')
+    [ Option "h" ["help"] (NoArg $ action printHelp')
         "Show this help and exit."
 
     , Option "V" ["version"]
@@ -88,6 +85,9 @@ options =
     , Option "" ["numeric-version"]
         (NoArg . action $ printVersion True)
         "Show machine readable version number and exit."
+
+    , Option "t" ["template"] (ReqArg (set tmplFile) "TEMPLATE_FILE")
+       "Set custom template instead of the default."
 
     , Option "o" ["output"] (ReqArg (set outFile) "OUTPUT_FILE")
         "Set output to OUTPUT_FILE instead of stdout."
@@ -120,12 +120,12 @@ mkDefaultConfig = do
     templateFile <- getDataFileName "data/ansible-module.st"
     return Config
         { progName = prog
-          , progVersion = version
-          , defaultTemplateFile = templateFile
-          , templateFile = templateFile
-          , binaryFile = ""
-          , documentationFile = Nothing
-          , outputFile = Nothing
+        , progVersion = version
+        , defaultTemplateFile = templateFile
+        , templateFile = templateFile
+        , binaryFile = ""
+        , documentationFile = Nothing
+        , outputFile = Nothing
         }
 
 -- | Main functionality of this program, it takes 'Config' and produces Ansible
