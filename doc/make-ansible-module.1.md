@@ -85,7 +85,7 @@ encodedBinary
 
 # ENVIRONMENT VARIABLES
 
-hsansible_datadir
+hsansible\_datadir
 :   When set, *make-ansible-module* uses its value as a base directory where it
     searches for default template. This is a standard Cabal
     (*http://www.haskell.org/cabal/*) definition.

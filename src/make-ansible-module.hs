@@ -6,9 +6,9 @@
 -- Copyright:    (c) 2013 Peter Trsko
 -- License:      BSD3
 --
--- Maintainer:   dogmat@gmail.com | peter.trsko@gmail.com
--- Stability:    unstable | experimental | provisional | stable | frozen
--- Portability:  non-portable (OverloadedStrings RecordWildCards)
+-- Maintainer:   peter.trsko@gmail.com
+-- Stability:    experimental
+-- Portability:  non-portable (OverloadedStrings, RecordWildCards)
 --
 -- While Ansible allows it's users to develop modules in any scripting language
 -- it's sometimes useful to be able to use compiled languages. This program
@@ -117,7 +117,7 @@ options =
 mkDefaultConfig :: IO Config
 mkDefaultConfig = do
     prog <- getProgName
-    templateFile <- getDataFileName "data/ansible-module.st"
+    templateFile <- getDataFileName "data/ansible-module-template.py"
     return Config
         { progName = prog
         , progVersion = version
