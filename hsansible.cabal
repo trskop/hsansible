@@ -19,7 +19,7 @@ build-type:             Simple
 cabal-version:          >=1.8
 
 data-files:
-    data/ansible-module.st
+    data/ansible-module-template.py
   , data/hsansible-test-module.yaml
 
 extra-source-files:

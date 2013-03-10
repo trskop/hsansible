@@ -18,7 +18,7 @@ options:
         default: null
         version_added: 0.1.0.0
 examples:
-    - code: test-module [optional-other-arguments]
+    - code: hsansible-test-module [optional-other-arguments]
       description: Run module with optionally passed arguments, these are then part of the JSON response.
-    - code: test-module failed [optional-other-arguments]
+    - code: hsansible-test-module failed [optional-other-arguments]
       description: Module will fail with properly formated failure message.
