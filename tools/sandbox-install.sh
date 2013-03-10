@@ -126,11 +126,11 @@ cabalInstallMain() {
     done
 
     PACKAGES_CONF="$INSTALL_DIR/packages-`ghc --numeric-version`.conf"
-    echo mkdir "$INSTALL_DIR"
-    echo ghc-pkg init "$PACKAGES_CONF"
+    mkdir "$INSTALL_DIR"
+    ghc-pkg init "$PACKAGES_CONF"
     (
         cd "$WD"
-        echo cabal install --prefix="$INSTALL_DIR" --package-db="$PACKAGES_CONF"
+        cabal install --prefix="$INSTALL_DIR" --package-db="$PACKAGES_CONF"
     )
 }
 
@@ -140,7 +140,7 @@ cabalDevMain() {
 
     (
         cd "$WD"
-        echo cabal-dev install --sandbox="$INSTALL_DIR"
+        cabal-dev install --sandbox="$INSTALL_DIR"
     )
 }
 
