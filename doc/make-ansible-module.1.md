@@ -1,6 +1,6 @@
-% MAKE-ANSIBLE-MODULE(1) Hsansile 0.2.0.0
+% MAKE-ANSIBLE-MODULE(1) Hsansile 0.3.0.0
 % Peter Trško
-% February 25, 2013
+% March 13, 2013
 
 # NAME
 
@@ -100,6 +100,8 @@ Default Ansible module template, i.e. Python wrapper:
 # SEE ALSO
 
 `ansible`(1), *http://ansible.cc*
+
+`test-ansible-module`(1)
 
 *http://www.stringtemplate.org*,
 *http://www.haskell.org/haskellwiki/HStringTemplate*

@@ -1,15 +1,22 @@
 {-# LANGUAGE RecordWildCards #-}
 -- |
 -- Module:       Main
--- Description:  <Short text displayed on contents page>
+-- Description:  Simple tool for testing Hsansible based Ansible modules
 -- Copyright:    (c) 2013 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  portable | non-portable (<reason>)
+-- Portability:  non-portable (RecordWildCards)
 --
--- <module description starting at first column>
+-- Simple tool for testing Hsansible based Ansible modules. Should also work
+-- for any Ansible module that doesn't use Ansible module common code and
+-- accept arguments via temporary file.
+--
+-- It takes module file and copies it in to a temporary file. Creates temporary
+-- files for simple and complex module arguments passed via @-a@ or @-A@, and
+-- @-c@ or @-C@ options. After doing so it executes copy of the module and
+-- passes argument files to it as command line options.
 module Main (main)
     where
 
