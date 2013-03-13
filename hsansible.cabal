@@ -61,6 +61,44 @@ library
   if flag(pedantic)
     ghc-options:        -Werror
 
+executable make-ansible-module
+  hs-source-dirs:       src
+  main-is:              make-ansible-module.hs
+  other-modules:        Paths_hsansible
+  build-depends:
+      base == 4.5.*
+    , base64-bytestring == 0.1.* || == 1.0.*
+      -- ^ Used interface of base64-bytestring hadn't changed since the start.
+    , bytestring
+    , HStringTemplate == 0.7.*
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
+executable test-ansible-module
+  hs-source-dirs:       src
+  main-is:              test-ansible-module.hs
+  other-modules:        Paths_hsansible
+  build-depends:
+      base == 4.5.*
+    , directory >= 1.1.0.2 && < 2
+    -- ^ Should work with earlier versions, but those have lower upper bound on
+    -- filepath and that may be inconsistent with already installed version of
+    -- filepath.
+    , filepath >= 1.1 && < 1.4
+    -- ^ Same boundaries as directory and process packages have.
+    , process >= 1.1.0.2 && < 1.2
+    -- ^ Lower bound choosen to allow directory package of version 1.2.
+    , temporary >= 1.1
+    -- ^ First version that define withSystemTempDirectory function.
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
 executable hsansible-test-module
   if !flag(test-module)
     buildable: False
@@ -84,22 +122,6 @@ executable hsansible-test-module
       -- ^ Version 0.11.1.0 had a build failure.
     , transformers >= 0.2.0.0
       -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
-  ghc-options:          -Wall
-  if impl(ghc >= 6.8)
-    ghc-options:        -fwarn-tabs
-  if flag(pedantic)
-    ghc-options:        -Werror
-
-executable make-ansible-module
-  hs-source-dirs:       src
-  main-is:              make-ansible-module.hs
-  other-modules:        Paths_hsansible
-  build-depends:
-      base == 4.5.*
-    , base64-bytestring == 0.1.* || == 1.0.*
-      -- ^ Used interface of base64-bytestring hadn't changed since the start.
-    , bytestring
-    , HStringTemplate == 0.7.*
   ghc-options:          -Wall
   if impl(ghc >= 6.8)
     ghc-options:        -fwarn-tabs
