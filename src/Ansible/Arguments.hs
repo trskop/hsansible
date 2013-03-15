@@ -24,6 +24,7 @@ module Ansible.Arguments
     , StdArguments(..)
 
     -- ** Standard arguments parser
+    , parseStdArguments
     , stdArgumentsParser
 
     -- * Utility functions
