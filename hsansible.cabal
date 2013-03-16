@@ -128,6 +128,41 @@ executable hsansible-test-module
   if flag(pedantic)
     ghc-options:        -Werror
 
+test-suite hsansible-unit-tests
+  hs-source-dirs:       src, test
+  type:                 exitcode-stdio-1.0
+  main-is:              unit-tests.hs
+  build-depends:
+    -- Copy of library dependencies:
+      aeson >= 0.4.0.0
+      -- ^ Function decode was introduced in version 0.4.0.0.
+    , attoparsec >= 0.8.6.1
+      -- ^ Same constraint as aeson has (last checked version of aeson was
+      -- 0.6.1.0).
+    , base == 4.5.*
+    , bytestring
+    , case-insensitive == 0.4.* || == 1.*
+    , text >= 0.11.1.1 && < 1
+      -- ^ Version 0.11.1.0 had a build failure.
+    , transformers >= 0.2.0.0
+      -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
+
+    -- Additional dependencies:
+    , HUnit >= 1.2 && < 2
+      -- ^ Same constraints as test-framework-hunit
+    , QuickCheck >= 2.4 && < 2.6
+      -- ^ Same constraints as test-framework-quickcheck2
+    , test-framework >= 0.8 && < 1
+      -- ^ Same constraint as test-framework-skip, other packages that
+      -- depend on it have less restrictive bounds.
+    , test-framework-hunit >= 0.2.6
+      -- ^ Lower versions have more restrictive bounds on test-framework.
+    , test-framework-quickcheck2 >= 0.3
+      -- ^ There were changes in QuickCheck bounds in 0.2 branch and last one
+      -- on it had a compilation failure on Hackage.
+    , test-framework-skip == 1.*
+      -- ^ Currently there is only version 1.0.
+
 source-repository head
   type:                 git
   location:             git://github.com/trskop/hsansible.git
