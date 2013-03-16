@@ -25,6 +25,7 @@ data-files:
 extra-source-files:
     README.md
   , doc/make-ansible-module.1.md
+  , doc/test-ansible-module.1.md
 
 flag pedantic
   description:
@@ -132,6 +133,11 @@ test-suite hsansible-unit-tests
   hs-source-dirs:       src, test
   type:                 exitcode-stdio-1.0
   main-is:              unit-tests.hs
+  other-modules:
+      Ansible
+    , Ansible.Arguments
+    , Ansible.Failure
+    , Test.Ansible.Arguments
   build-depends:
     -- Copy of library dependencies:
       aeson >= 0.4.0.0
