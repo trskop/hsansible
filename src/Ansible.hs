@@ -102,9 +102,12 @@ moduleMain ansibleModule = do
 -- | Call 'Monad'.'fail', with specified message, when predicate is 'True'.
 thenFail :: Monad m => Bool -> String -> m ()
 thenFail p = when p . fail
+infix 0 `thenFail`
 
 -- | Call 'Monad'.'fail', with specified message, when predicate is 'False'.
 otherwiseFail :: Monad m => Bool -> String -> m ()
 otherwiseFail = thenFail . not
+infix 0 `otherwiseFail`
+
 
 -- }}} Utility functions ------------------------------------------------------
