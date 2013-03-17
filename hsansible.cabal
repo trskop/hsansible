@@ -26,6 +26,8 @@ extra-source-files:
     README.md
   , doc/make-ansible-module.1.md
   , doc/test-ansible-module.1.md
+  , examples/cabal.hs
+  , examples/playbooks/install-hsansible-on-debian-and-ubuntu.yaml
 
 flag pedantic
   description:
