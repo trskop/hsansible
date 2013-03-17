@@ -168,7 +168,9 @@ test-suite hsansible-unit-tests
     , test-framework-quickcheck2 >= 0.3
       -- ^ There were changes in QuickCheck bounds in 0.2 branch and last one
       -- on it had a compilation failure on Hackage.
-    , test-framework-skip == 1.*
+
+      -- Not required right now:
+    -- , test-framework-skip == 1.*
       -- ^ Currently there is only version 1.0.
 
 source-repository head

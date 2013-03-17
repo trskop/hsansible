@@ -45,7 +45,7 @@ import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Error (ErrorT)
 import Data.Aeson ((.=), ToJSON(..))
 import qualified Data.Aeson as JSON
-import Data.Attoparsec (Parser, satisfy, word8)
+import Data.Attoparsec (Parser, satisfy, skipWhile, word8)
 import Data.Attoparsec.Char8 (isDigit_w8, isSpace_w8)
 import Data.Attoparsec.Combinator (many1, option, sepBy1)
 import qualified Data.Attoparsec as Attoparsec
@@ -127,7 +127,8 @@ parseStdArguments bs =
         Attoparsec.Done _ x -> Just x
         _                   -> Nothing
   where
-    parser = stdArgumentsParser <* word8 10
+    skipWhiteSpace = skipWhile $ \ ch -> ch == 9 || ch == 32
+    parser = skipWhiteSpace *> stdArgumentsParser <* skipWhiteSpace <* word8 10
 
 -- | Parse @key=value@ pairs passed as a white space separated list. Note that
 -- doe to using Attoparsec.takeWhile1 it will fail on end of input.

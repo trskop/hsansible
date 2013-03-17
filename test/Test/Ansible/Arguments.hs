@@ -20,7 +20,6 @@ import Data.String (fromString)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
-import Test.Framework.Skip (skip)
 import Test.HUnit ((@=?))
 
 import Ansible.Arguments
@@ -51,22 +50,19 @@ standardArgumentsTests =
     [ testCase "empty arguments"
         $ Just [] @=? parseStdArguments ""
 
-    -- Pure white space and strings starting with or ending with it won't be
-    -- parsed correctly. Currently it isn't issue, but it should be handled
-    -- either way.
-    , skip . testCase "empty arguments, but with white space on input"
+    , testCase "empty arguments, but with white space on input"
         $ Just [] @=? parseStdArguments "  \t   \t\t"
 
     , testCase "key with no value"
         $ Just [("foo", Nothing)] @=? parseStdArguments "foo"
 
-    , skip . testCase "key with no value with white space on the left"
+    , testCase "key with no value with white space on the left"
         $ Just [("foo", Nothing)] @=? parseStdArguments "  foo"
 
-    , skip . testCase "key with no value with white space on the right"
+    , testCase "key with no value with white space on the right"
         $ Just [("foo", Nothing)] @=? parseStdArguments "foo  "
 
-    , skip . testCase "key with no value surrounded by white space"
+    , testCase "key with no value surrounded by white space"
         $ Just [("foo", Nothing)] @=? parseStdArguments "  foo  "
 
     , testCase "key with empty value"
