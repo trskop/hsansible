@@ -1,6 +1,6 @@
-% MAKE-ANSIBLE-MODULE(1) Hsansile 0.3.0.0
+% MAKE-ANSIBLE-MODULE(1) Hsansile 0.3.1.1
 % Peter Trško
-% March 13, 2013
+% March 19, 2013
 
 # NAME
 

@@ -1,6 +1,6 @@
-% TEST-ANSIBLE-MODULE(1) Hsansile 0.3.0.0
+% TEST-ANSIBLE-MODULE(1) Hsansile 0.3.1.1
 % Peter Trško
-% March 13, 2013
+% March 19, 2013
 
 # NAME
 
@@ -9,8 +9,8 @@ test-ansible-module - Simple tool for testing Hsansible based Ansible modules.
 
 # SYNOPSIS
 
-test-ansible-module \[-a MODULE\_ARGUMENTS|-A FILE] \[-c COMPLEX\_ARGUMENTS|-C
-FILE] MODULE\_FILE
+test-ansible-module \[-r\] \[-p FILE\] \[-a ARGUMENTS|-A FILE]
+\[-c JSON|-C FILE] FILE
 
 make-ansible-module {-h|-V|--numeric-version|--print-template}
 
@@ -38,21 +38,29 @@ argument files to it as command line options.
 \--numeric-version
 :   Show machine readable version number and exit.
 
--a *MODULE\_ARGUMENTS*, \--arguments=*MODULE\_ARGUMENTS*, \--args=*MODULE\_ARGUMENTS*
-:   Pass *MODULE\_ARGUMENTS* to the module via temporary file. Don't mix with
-    *-A* option.
+-a *ARGUMENTS*, \--arguments=*ARGUMENTS*, \--args=*ARGUMENTS*
+:   Pass *ARGUMENTS* to the module via temporary file. Don't mix with *-A*
+    option.
 
 -A *FILE*, \--arguments-file=*FILE*, \--args-file=*FILE*
 :   Copy *FILE* to a temporary file that will be passed to the module as
     arguments file. Don't mix with -a option.
 
--c *COMPLEX_ARGUMENTS*, \--complex-arguments=*COMPLEX_ARGUMENTS*
-:   Pass *COMPLEX\_ARGUMENTS* to the module via temporary file. Don't mix with
-    *-C* option.
+-c *JSON*, \--complex-arguments=*JSON*
+:   Pass *JSON* to the module via temporary file. Don't mix with *-C* option.
 
 -C *FILE*, \--complex-arguments-file=*FILE*
 :   Copy *FILE* to a temporary file that will be passed to the module as
     complex arguments file. Don't mix with *-c* option.
+
+-i *COMMAND*, \--interpret=*COMMAND*
+:   Don't execute module directly, but using *COMMAND* as interpret.
+
+-r, \--runhaskell
+:   Don't execute module directly, but using runhaskell.
+
+-p *FILE*, \--package-conf=*FILE*
+:   Use alternative GHC package configuration. Implies *--runhaskell*.
 
 
 # SEE ALSO
