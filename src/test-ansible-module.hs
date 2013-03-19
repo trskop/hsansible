@@ -70,7 +70,7 @@ printHelp h Config{..} = hPutStrLn h . flip usageInfo options $ unlines
     , ""
     , "Usage:"
     , "    " ++ progName
-        ++ " [-h] [-p FILE] [-a ARGUMENTS|-A FILE] [-c JSON|-C FILE] FILE"
+        ++ " [-r] [-p FILE] [-a ARGUMENTS|-A FILE] [-c JSON|-C FILE] FILE"
     , "    " ++ progName ++ " {-h|-V|--numeric-version|--print-template}"
     ]
 
@@ -93,7 +93,7 @@ options =
         (ReqArg (set interpret) "COMMAND")
         "Don't execute module directly, but using COMMAND as interpret."
 
-    , Option "h" ["runhaskell"]
+    , Option "r" ["runhaskell"]
         (NoArg $ set interpret "runhaskell")
         "Don't execute module directly, but using runhaskell."
 
