@@ -21,8 +21,10 @@
 module Main (main)
     where
 
+import Control.Applicative ((<$>))
+import Data.Function (on)
 import Data.Monoid (Endo(..), Monoid(..))
-import Data.Maybe (fromJust, isJust, isNothing)
+import Data.Maybe (fromJust, fromMaybe, isJust, isNothing)
 import System.Exit (ExitCode(..))
 
 import Ansible
@@ -69,28 +71,40 @@ instance ParseArguments Conf where
 
 main :: IO ()
 main = Ansible.moduleMain $ \ Conf{..} (_ :: Maybe JSON.Value) -> do
-    updateResult <- if updatePackageCache
-        then cabal ["update"]
-        else return Nothing
-
-    installResult <- if isJust packageName
-        then cabal ["install", Text.unpack $ fromJust packageName]
-        else return Nothing
-
-    isNothing updateResult && isNothing installResult
+    not updatePackageCache && isNothing packageName
         `thenFail` "Either specify package to install or that cache has to be updated."
+
+    updateResult <- if updatePackageCache
+        then Just <$> cabal ["update"]
+        else return Nothing
+    installResult <- whenNotInstalled packageName $ \ pkg -> cabal ["install", pkg]
 
     return $ JSON.object
         [ "changed" .= isJust installResult
-        , "update_result" .= updateResult
-        , "install_result" .= installResult
+        , "stdout" .= concatStdout updateResult installResult
+        , "stderr" .= concatStderr updateResult installResult
         ]
   where
     mkMsg rc out err = showString "rc: " . shows rc
         . (if null out then id else showString " stdout: " . shows out)
         $ (if null err then id else showString " stderr: " . shows err) ""
 
-    cabal args = do
-        (rc, out, err) <- liftIO $ readProcessWithExitCode "cabal" args ""
+    runCmd cmd args = do
+        (rc, out, err) <- liftIO $ readProcessWithExitCode cmd args ""
         rc /= ExitSuccess `thenFail` mkMsg rc out err
-        return $ Just (out, err)
+        return (out, err)
+
+    cabal = runCmd "cabal"
+
+    whenNotInstalled Nothing    _ = return Nothing
+    whenNotInstalled (Just pkg) f = let pkg' = Text.unpack pkg in do
+        (out, _) <- runCmd "ghc-pkg" ["list", "--simple-output", pkg']
+        if null out
+            then Just <$> f pkg'
+            else return Nothing
+
+    concatOutput selector x y =
+        let str = ((++) `on` selector . fromMaybe ("", "")) x y
+        in if null str then Nothing else Just str
+    concatStdout = concatOutput fst
+    concatStderr = concatOutput snd
