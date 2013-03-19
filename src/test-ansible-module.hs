@@ -23,7 +23,7 @@ module Main (main)
 import Control.Applicative ((<$>))
 import Control.Arrow (first)
 import Control.Monad (unless, when)
-import Data.Monoid (Endo(..), First(..), Monoid(..))
+import Data.Monoid (Endo(..), First(..), Monoid(..), (<>))
 import Data.Version (Version, showVersion)
 import System.Console.GetOpt
     (ArgDescr(..), ArgOrder(..), OptDescr(..), getOpt, usageInfo)
@@ -56,8 +56,9 @@ data Config = Config
     , moduleArgumentsFile :: Maybe FilePath
     , moduleComplexArgumentsFile :: Maybe FilePath
     , moduleComplexArguments :: Maybe String
+    , moduleInterpret :: Maybe FilePath
+    , ghcPackageConf :: Maybe FilePath
     }
-    deriving (Show)
 
 -- | Print help message that includes usage information, to specified file
 -- handle. It starts with empty line.
@@ -68,8 +69,8 @@ printHelp h Config{..} = hPutStrLn h . flip usageInfo options $ unlines
       \ temporary files."
     , ""
     , "Usage:"
-    , "    " ++ progName ++ " [-a MODULE_ARGUMENTS|-A FILE]\
-        \  [-c COMPLEX_ARGUMENTS|-C FILE] MODULE_FILE"
+    , "    " ++ progName
+        ++ " [-h] [-p FILE] [-a ARGUMENTS|-A FILE] [-c JSON|-C FILE] FILE"
     , "    " ++ progName ++ " {-h|-V|--numeric-version|--print-template}"
     ]
 
@@ -88,25 +89,37 @@ options =
         (NoArg . action $ printVersion True)
         "Show machine readable version number and exit."
 
+    , Option "i" ["interpret"]
+        (ReqArg (set interpret) "COMMAND")
+        "Don't execute module directly, but using COMMAND as interpret."
+
+    , Option "h" ["runhaskell"]
+        (NoArg $ set interpret "runhaskell")
+        "Don't execute module directly, but using runhaskell."
+
+    , Option "p" ["package-conf"]
+        (ReqArg ((<> set interpret "runhaskell") . set packageConf) "FILE")
+        "Use alternative GHC package configuration. Implies `--runhaskell'."
+
     , Option "a" ["arguments", "args"]
-        (ReqArg (set args) "MODULE_ARGUMENTS")
-        "Pass MODULE_ARGUMENTS to the module via temporary file. Don't mix\
-        \ with -A option."
+        (ReqArg (set args) "ARGUMENTS")
+        "Pass ARGUMENTS to the module via temporary file. Don't mix with `-A'\
+        \ option."
 
     , Option "A" ["arguments-file", "args-file"]
         (ReqArg (set argsFile) "FILE")
         "Copy FILE to a temporary file that will be passed to the module as\
-        \ arguments file. Don't mix with -a option."
+        \ arguments file. Don't mix with `-a' option."
 
     , Option "c" ["complex-arguments"]
-        (ReqArg (set cmplxArgs) "COMPLEX_ARGUMENTS")
-        "Pass COMPLEX_ARGUMENTS to the module via temporary file. Don't mix\
-        \ with -C option."
+        (ReqArg (set cmplxArgs) "JSON")
+        "Pass JSON to the module via temporary file. Don't mix with `-C'\
+        \ option."
 
     , Option "C" ["complex-arguments-file"]
         (ReqArg (set cmplxArgsFile) "FILE")
         "Copy FILE to a temporary file that will be passed to the module as\
-        \ complex arguments file. Don't mix with -c option."
+        \ complex arguments file. Don't mix with `-c' option."
     ]
   where
     set f str = (Endo $ f str, First Nothing)
@@ -116,6 +129,8 @@ options =
     argsFile str cfg = cfg{moduleArgumentsFile = Just str}
     cmplxArgs str cfg = cfg{moduleComplexArguments = Just str}
     cmplxArgsFile str cfg = cfg{moduleComplexArgumentsFile = Just str}
+    interpret str cfg = cfg{moduleInterpret = Just str}
+    packageConf str cfg = cfg{ghcPackageConf = Just str}
 
     printHelp' cfg = printVersion False cfg >> printHelp stdout cfg
     printVersion p Config{..} = putStrLn $
@@ -133,6 +148,8 @@ mkDefaultConfig = do
         , moduleArgumentsFile = Nothing
         , moduleComplexArgumentsFile = Nothing
         , moduleComplexArguments = Nothing
+        , moduleInterpret = Nothing
+        , ghcPackageConf = Nothing
         }
 
 main' :: Config -> FilePath -> IO ()
@@ -144,14 +161,29 @@ main' Config{..} tmpDir = do
             moduleComplexArguments, moduleComplexArgumentsFile, "{}")
         ]
     copyFile moduleFile isolatedModuleFile
-    setPermissions isolatedModuleFile . setOwnerExecutable True
-        $ setOwnerReadable True emptyPermissions
-    rawSystem isolatedModuleFile [argsFile, cmplxArgsFile] >>= exitWith
+    case moduleInterpret of
+        Just interpret ->
+            -- Option `-package-conf' is used only with `runhaskell' see
+            -- definition of `options'.
+            rawSystem interpret (addPkgConfArg $ isolatedModuleFile : modArgs)
+                >>= exitWith
+        Nothing -> do
+            setPermissions isolatedModuleFile . setOwnerExecutable True
+                $ setOwnerReadable True emptyPermissions
+            rawSystem isolatedModuleFile modArgs >>= exitWith
   where
     argsFile, cmplxArgsFile, isolatedModuleFile :: FilePath
     argsFile = tmpDir </> "arguments"
     cmplxArgsFile = tmpDir </> "complex-arguments"
     isolatedModuleFile = tmpDir </> takeFileName moduleFile
+
+    modArgs :: [String]
+    modArgs = [argsFile, cmplxArgsFile]
+
+    addPkgConfArg :: [String] -> [String]
+    addPkgConfArg = case ghcPackageConf of
+        Nothing -> id
+        Just cfg -> (("-package-conf=" ++ cfg) :)
 
     handleArgsFile
         :: (FilePath, Maybe String, Maybe FilePath, String)
@@ -171,11 +203,9 @@ main' Config{..} tmpDir = do
 main :: IO ()
 main = do
     defaultConfig <- mkDefaultConfig
-
     (m, rest, errs) <- getOpt Permute options <$> getArgs
     unless (null errs)
         $ die defaultConfig errs
-
     case first (($ defaultConfig) . appEndo) $ mconcat m of
         (cfg, First (Just action)) -> action cfg
         (cfg@Config{..}, First Nothing) -> do
