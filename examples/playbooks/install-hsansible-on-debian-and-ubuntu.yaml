@@ -8,14 +8,16 @@
   sudo: no
   # ^ It's not necessary to install Hsansible via sudo since it may be
   # installed in user's home directory. Only the haskell-platform installation
-  # requires sudo, see included tasks file.
+  # requires sudo.
 
   vars:
     - hsansible_dir: /home/ansible/hsansible
     - haskell_sandbox: /home/ansible/haskell-sandbox
 
   tasks:
-    # Tag "update-hsansible" is here to provide easy way to just update Hsansible.
+    # Tag "update-hsansible" is here to provide easy way to just update
+    # Hsansible by installing newer version. You might want to also run ghc-pkg
+    # unregister for older versions, but this playbook doesn't handle that.
 
     - name: Install Haskell Platform
       apt: pkg=haskell-platform state=installed update_cache=yes
