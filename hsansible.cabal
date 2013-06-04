@@ -28,6 +28,8 @@ extra-source-files:
   , doc/test-ansible-module.1.md
   , examples/cabal.hs
   , examples/playbooks/install-hsansible-on-debian-and-ubuntu.yaml
+  , tools/generate-man-pages.sh
+  , tools/sandbox-install.sh
 
 flag pedantic
   description:
