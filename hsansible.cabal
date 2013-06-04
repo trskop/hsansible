@@ -53,7 +53,7 @@ library
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base == 4.5.*
+    , base >= 4.5 && < 4.7
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
     , text >= 0.11.1.1 && < 1
@@ -71,7 +71,7 @@ executable make-ansible-module
   main-is:              make-ansible-module.hs
   other-modules:        Paths_hsansible
   build-depends:
-      base == 4.5.*
+      base >= 4.5 && < 4.7
     , base64-bytestring == 0.1.* || == 1.0.*
       -- ^ Used interface of base64-bytestring hadn't changed since the start.
     , bytestring
@@ -87,7 +87,7 @@ executable test-ansible-module
   main-is:              test-ansible-module.hs
   other-modules:        Paths_hsansible
   build-depends:
-      base == 4.5.*
+      base >= 4.5 && < 4.7
     , directory >= 1.1.0.2 && < 2
     -- ^ Should work with earlier versions, but those have lower upper bound on
     -- filepath and that may be inconsistent with already installed version of
@@ -120,7 +120,7 @@ executable hsansible-test-module
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base == 4.5.*
+    , base >= 4.5 && < 4.7
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
     , text >= 0.11.1.1 && < 1
@@ -149,7 +149,7 @@ test-suite hsansible-unit-tests
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base == 4.5.*
+    , base >= 4.5 && < 4.7
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
     , text >= 0.11.1.1 && < 1
@@ -174,6 +174,11 @@ test-suite hsansible-unit-tests
       -- Not required right now:
     -- , test-framework-skip == 1.*
       -- ^ Currently there is only version 1.0.
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
 
 source-repository head
   type:                 git
