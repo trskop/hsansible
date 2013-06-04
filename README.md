@@ -70,7 +70,7 @@ When `hsansible` is installed in sandbox, then interpreted Ansible modules
 written in Haskell have to know where to find it. To do so you need to modify
 `#!` line to look like this:
 
-    #!/usr/bin/env runhaskell -package-conf=<path-to-packages-conf-goes-here>
+    #!/usr/bin/runhaskell -package-conf=<path-to-packages-conf-goes-here>
 
 
 Installation: Ansible Playbook
