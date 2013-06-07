@@ -1,5 +1,5 @@
 name:                   hsansible
-version:                0.3.1.2
+version:                0.3.2.0
 synopsis:               Simple framework for building Ansible modules.
 description:
   Ansible <http://ansible.cc> is a software for deploying, managing, and
