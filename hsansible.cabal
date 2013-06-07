@@ -136,12 +136,13 @@ executable hsansible-test-module
 test-suite hsansible-unit-tests
   hs-source-dirs:       src, test
   type:                 exitcode-stdio-1.0
-  main-is:              unit-tests.hs
+  main-is:              unit-tests-main.hs
   other-modules:
       Ansible
     , Ansible.Arguments
     , Ansible.Failure
-    , Test.Ansible.Arguments
+    , TestCase
+    , TestCase.Ansible.Arguments
   build-depends:
     -- Copy of library dependencies:
       aeson >= 0.4.0.0

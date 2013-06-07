@@ -11,7 +11,7 @@
 --               module)
 --
 -- Tests for raw (no parsing) Ansible module arguments.
-module Test.Ansible.Arguments (tests)
+module TestCase.Ansible.Arguments (tests)
     where
 
 import Control.Applicative ((<$>))
