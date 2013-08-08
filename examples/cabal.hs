@@ -21,20 +21,21 @@
 module Main (main)
     where
 
-import Control.Applicative ((<$>))
-import Data.Function (on)
-import Data.Monoid (Endo(..), Monoid(..))
-import Data.Maybe (fromJust, fromMaybe, isJust, isNothing)
-import System.Exit (ExitCode(..))
+import           Control.Applicative
+import           Data.Function (on)
+import           Data.Maybe (fromJust, fromMaybe, isJust, isNothing)
+import           Data.Monoid (Endo(..), Monoid(..))
+import           System.Exit (ExitCode(..))
 
-import Ansible
-import Control.Monad.IO.Class (liftIO)
-import Data.Aeson ((.=))
+import           Ansible
+import           Control.Monad.IO.Class (liftIO)
+import           Data.Aeson ((.=))
 import qualified Data.Aeson as JSON (Value, object)
 import qualified Data.CaseInsensitive as CI (mk, original)
-import Data.Text (Text)
+import           Data.Text (Text)
 import qualified Data.Text as Text (unpack)
-import System.Process (readProcessWithExitCode)
+import           GHC.IO.Handle (hGetContents)
+import           System.Process (readProcessWithExitCode, runInteractiveCommand, waitForProcess)
 
 
 data Conf = Conf
@@ -88,9 +89,19 @@ main = Ansible.moduleMain $ \ Conf{..} (_ :: Maybe JSON.Value) -> do
     mkMsg rc out err = showString "rc: " . shows rc
         . (if null out then id else showString " stdout: " . shows out)
         $ (if null err then id else showString " stderr: " . shows err) ""
-
+        
     runCmd cmd args = do
         (rc, out, err) <- liftIO $ readProcessWithExitCode cmd args ""
+        rc /= ExitSuccess `thenFail` mkMsg rc out err
+        return (out, err)
+    
+    runShell cmd = do
+        (rc, out, err) <- liftIO $ do
+             (_, outHdl, errHdl, processHdl) <- runInteractiveCommand  cmd
+             rc <- liftIO $ waitForProcess processHdl
+             (,,) <$> return rc 
+                  <*> hGetContents outHdl
+                  <*> hGetContents errHdl
         rc /= ExitSuccess `thenFail` mkMsg rc out err
         return (out, err)
 
@@ -98,8 +109,9 @@ main = Ansible.moduleMain $ \ Conf{..} (_ :: Maybe JSON.Value) -> do
 
     whenNotInstalled Nothing    _ = return Nothing
     whenNotInstalled (Just pkg) f = let pkg' = Text.unpack pkg in do
-        (out, _) <- runCmd "ghc-pkg" ["list", "--simple-output", pkg']
-        if null out
+        (ghcOut, _) <- runCmd "ghc-pkg" ["list", "--simple-output", pkg']
+        (lsOut,  _) <- runShell $ "ls ~/.cabal/packages/hackage.haskell.org | grep " ++ pkg'
+        if null (ghcOut ++  lsOut)
             then Just <$> f pkg'
             else return Nothing
 
