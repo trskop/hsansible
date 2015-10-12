@@ -53,10 +53,10 @@ library
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base >= 4.5 && < 4.7
+    , base >= 4.5 && < 4.9
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
-    , text >= 0.11.1.1 && < 1
+    , text >= 0.11.1.1 && < 1.3
       -- ^ Version 0.11.1.0 had a build failure.
     , transformers >= 0.2.0.0
       -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
@@ -71,11 +71,11 @@ executable make-ansible-module
   main-is:              make-ansible-module.hs
   other-modules:        Paths_hsansible
   build-depends:
-      base >= 4.5 && < 4.7
+      base >= 4.5 && < 4.9
     , base64-bytestring == 0.1.* || == 1.0.*
       -- ^ Used interface of base64-bytestring hadn't changed since the start.
     , bytestring
-    , HStringTemplate == 0.7.*
+    , HStringTemplate == 0.7.* || == 0.8.*
   ghc-options:          -Wall
   if impl(ghc >= 6.8)
     ghc-options:        -fwarn-tabs
@@ -87,14 +87,14 @@ executable test-ansible-module
   main-is:              test-ansible-module.hs
   other-modules:        Paths_hsansible
   build-depends:
-      base >= 4.5 && < 4.7
+      base >= 4.5 && < 4.9
     , directory >= 1.1.0.2 && < 2
     -- ^ Should work with earlier versions, but those have lower upper bound on
     -- filepath and that may be inconsistent with already installed version of
     -- filepath.
     , filepath >= 1.1 && < 1.4
     -- ^ Same boundaries as directory and process packages have.
-    , process >= 1.1.0.2 && < 1.2
+    , process >= 1.1.0.2 && < 1.4
     -- ^ Lower bound choosen to allow directory package of version 1.2.
     , temporary >= 1.1
     -- ^ First version that define withSystemTempDirectory function.
@@ -120,10 +120,10 @@ executable hsansible-test-module
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base >= 4.5 && < 4.7
+    , base >= 4.5 && < 4.9
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
-    , text >= 0.11.1.1 && < 1
+    , text >= 0.11.1.1 && < 1.3
       -- ^ Version 0.11.1.0 had a build failure.
     , transformers >= 0.2.0.0
       -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
@@ -150,10 +150,10 @@ test-suite hsansible-unit-tests
     , attoparsec >= 0.8.6.1
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
-    , base >= 4.5 && < 4.7
+    , base >= 4.5 && < 4.9
     , bytestring
     , case-insensitive == 0.4.* || == 1.*
-    , text >= 0.11.1.1 && < 1
+    , text >= 0.11.1.1 && < 1.3
       -- ^ Version 0.11.1.0 had a build failure.
     , transformers >= 0.2.0.0
       -- ^ Depending on MonadIO which changed it's module name in 0.2.0.0
@@ -161,7 +161,7 @@ test-suite hsansible-unit-tests
     -- Additional dependencies:
     , HUnit >= 1.2 && < 2
       -- ^ Same constraints as test-framework-hunit
-    , QuickCheck >= 2.4 && < 2.6
+    , QuickCheck >= 2.4 && < 2.9
       -- ^ Same constraints as test-framework-quickcheck2
     , test-framework >= 0.8 && < 1
       -- ^ Same constraint as test-framework-skip, other packages that
