@@ -1,13 +1,93 @@
-# Linux
-.*
-!.gitignore
+# This file was generated using:
+#
+#   https://github.com/trskop/snippets/blob/master/scripts/mkgitignore.sh
+#
+# and it's based on snippets taken from:
+#
+#   https://github.com/github/gitignore
+
+# {{{ Global/Linux.gitignore ##################################################
 *~
 
-# Haskell
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+# }}} Global/Linux.gitignore ##################################################
+
+# {{{ Global/OSX.gitignore ####################################################
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+# }}} Global/OSX.gitignore ####################################################
+
+# {{{ Global/Vim.gitignore ####################################################
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+# }}} Global/Vim.gitignore ####################################################
+
+# {{{ Global/Windows.gitignore ################################################
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+# }}} Global/Windows.gitignore ################################################
+
+# {{{ Haskell.gitignore #######################################################
 dist
 cabal-dev
 *.o
 *.hi
 *.chi
 *.chs.h
-.virthualenv
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+.stack-work/
+# }}} Haskell.gitignore #######################################################
