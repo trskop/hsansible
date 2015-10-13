@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2013, Peter Trsko <peter.trsko@gmail.com>
+# Copyright (c) 2013, 2015, Peter Trško <peter.trsko@gmail.com>
 #
 # All rights reserved.
 #
@@ -68,7 +68,7 @@ elif [ $# -gt 0 ]; then
     fi
 fi
 
-if ! which pandoc 2>&1 > /dev/null; then
+if ! hash pandoc 2> /dev/null; then
     cat 1>&2 << EOF
 ERROR: Command \`pandoc' wasn't found.
 
