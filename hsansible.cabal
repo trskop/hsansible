@@ -23,7 +23,8 @@ data-files:
   , data/hsansible-test-module.yaml
 
 extra-source-files:
-    README.md
+    ChangeLog.md
+  , README.md
   , doc/make-ansible-module.1.md
   , doc/test-ansible-module.1.md
   , examples/cabal.hs
