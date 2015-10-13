@@ -25,7 +25,6 @@ import Data.Function ((.))
 import Data.String (String)
 import Text.Show (Show(showsPrec), showString)
 
-import qualified Control.Monad.Trans.Error as E
 import Data.Aeson (ToJSON, (.=))
 import qualified Data.Aeson as JSON
 
@@ -40,10 +39,6 @@ data Failure = Failure
 -- | Construct a 'Failure' given a error/failure message.
 mkFailure :: String -> Failure
 mkFailure msg = Failure{failed = True, msg = msg}
-
-instance E.Error Failure where
-    noMsg = mkFailure ""
-    strMsg = mkFailure
 
 -- | Prints the message prefixed with "Failure: ".
 instance Show Failure where

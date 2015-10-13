@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -10,7 +11,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  DeriveDataTypeable, NoImplicitPrelude, OverloadedStrings,
+-- Portability:  CPP, DeriveDataTypeable, NoImplicitPrelude, OverloadedStrings,
 --               RecordWildCards
 --
 -- Interface for parsing Ansible module arguments.
@@ -55,7 +56,7 @@ import Text.Read (Read)
 import Text.Show (Show)
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Trans.Error (ErrorT)
+import Control.Monad.Trans.Except (ExceptT)
 import Data.Aeson ((.=), ToJSON(..))
 import qualified Data.Aeson as JSON
 import Data.Attoparsec.ByteString (Parser, satisfy, skipWhile, word8)
@@ -73,7 +74,6 @@ import Ansible.Failure (Failure)
 
 -- }}} Imports ----------------------------------------------------------------
 
-
 -- {{{ Generic argument parsing interface -------------------------------------
 
 class ParseArguments a where
@@ -85,7 +85,7 @@ class ParseArguments a where
 readArgumentsFile
     :: (MonadIO m, ParseArguments a)
     => FilePath
-    -> ErrorT Failure m a
+    -> ExceptT Failure m a
 readArgumentsFile fp = do
     content <- liftIO $ BS.readFile fp
     case parseArguments content of

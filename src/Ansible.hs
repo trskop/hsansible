@@ -21,7 +21,7 @@ module Ansible
     -- * Errors/failures
 
     -- | Ansible requres failures to be a JSON messages with certain form. Use
-    -- interface provided by 'ErrorT' monad transformer and its 'Error' class
+    -- interface provided by 'ExceptT' monad transformer and its 'ExceptT class
     -- for creating and throwing errors.
     , Failure()
 
@@ -56,8 +56,8 @@ import System.Environment (getArgs)
 import System.Exit (exitFailure)
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Trans.Error (ErrorT)
-import qualified Control.Monad.Trans.Error as Error
+import Control.Monad.Trans.Except (ExceptT)
+import qualified Control.Monad.Trans.Except as Except
 import Data.Aeson as JSON
 import Data.ByteString.Lazy.Char8 as BS (putStrLn, readFile)
 
@@ -69,7 +69,7 @@ import Ansible.Failure
 
 -- | Ansible module is parametrized by arguments (@a@) and it either produces
 -- 'Failure' or a result @r@.
-type Module a b m r = a -> Maybe b -> ErrorT Failure m r
+type Module a b m r = a -> Maybe b -> ExceptT Failure m r
 
 -- | Execute Module in most cases it's going to look like:
 --
@@ -80,7 +80,7 @@ moduleMain
     => Module a b m r
     -> m ()
 moduleMain ansibleModule = do
-    result <- Error.runErrorT $ do
+    result <- Except.runExceptT $ do
         args <- liftIO $ take 2 <$> getArgs
         when (null args) $ fail "Arguments file wasn't passed."
         moduleArgs <- readArgumentsFile $ head args
