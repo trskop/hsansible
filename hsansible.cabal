@@ -50,7 +50,7 @@ library
   build-depends:
       aeson >= 0.4.0.0
       -- ^ Function decode was introduced in version 0.4.0.0.
-    , attoparsec >= 0.8.6.1
+    , attoparsec >= 0.10.0.0
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
     , base >= 4.5 && < 4.9
@@ -117,7 +117,7 @@ executable hsansible-test-module
   build-depends:
       aeson >= 0.4.0.0
       -- ^ Function decode was introduced in version 0.4.0.0.
-    , attoparsec >= 0.8.6.1
+    , attoparsec >= 0.10.0.0
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
     , base >= 4.5 && < 4.9
@@ -147,7 +147,7 @@ test-suite hsansible-unit-tests
     -- Copy of library dependencies:
       aeson >= 0.4.0.0
       -- ^ Function decode was introduced in version 0.4.0.0.
-    , attoparsec >= 0.8.6.1
+    , attoparsec >= 0.10.0.0
       -- ^ Same constraint as aeson has (last checked version of aeson was
       -- 0.6.1.0).
     , base >= 4.5 && < 4.9

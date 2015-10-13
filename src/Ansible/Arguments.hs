@@ -58,10 +58,10 @@ import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Error (ErrorT)
 import Data.Aeson ((.=), ToJSON(..))
 import qualified Data.Aeson as JSON
-import Data.Attoparsec (Parser, satisfy, skipWhile, word8)
-import Data.Attoparsec.Char8 (isDigit_w8, isSpace_w8)
+import Data.Attoparsec.ByteString (Parser, satisfy, skipWhile, word8)
+import Data.Attoparsec.ByteString.Char8 (isDigit_w8, isSpace_w8)
 import Data.Attoparsec.Combinator (many1, option, sepBy1)
-import qualified Data.Attoparsec as Attoparsec
+import qualified Data.Attoparsec.ByteString as Attoparsec
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.CaseInsensitive as CI
