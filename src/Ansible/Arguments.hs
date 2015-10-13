@@ -1,16 +1,17 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Interface for parsing Ansible module argument.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (DeriveDataTypeable, OverloadedStrings,
---               RecordWildCards)
+-- Portability:  DeriveDataTypeable, NoImplicitPrelude, OverloadedStrings,
+--               RecordWildCards
 --
 -- Interface for parsing Ansible module arguments.
 module Ansible.Arguments
@@ -31,15 +32,27 @@ module Ansible.Arguments
     , castBool
     , fromPairs
     )
-    where
+  where
 
 -- {{{ Imports ----------------------------------------------------------------
 
 import Control.Applicative (Applicative(..), Alternative((<|>)), (<$>), liftA2)
-import Control.Monad (liftM2)
+import Control.Monad (Monad(fail, return), liftM2)
+import Data.Bool (Bool(False, True), (&&), (||), not, otherwise)
 import Data.Data (Data, Typeable)
+import Data.Either (Either(Left, Right))
+import Data.Eq (Eq((==), (/=)))
+import Data.Function ((.), ($))
+import Data.List (foldl', map)
+import Data.Maybe (Maybe(Just, Nothing))
 import Data.Monoid (Monoid(..))
+import Data.Ord (Ord((<=), (>=)))
+import Data.String (String)
+import Data.Tuple (uncurry)
 import Data.Word (Word8)
+import System.IO (FilePath)
+import Text.Read (Read)
+import Text.Show (Show)
 
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Error (ErrorT)
@@ -127,7 +140,7 @@ parseStdArguments bs =
         Attoparsec.Done _ x -> Just x
         _                   -> Nothing
   where
-    skipWhiteSpace = skipWhile $ \ ch -> ch == 9 || ch == 32
+    skipWhiteSpace = skipWhile $ \ch -> ch == 9 || ch == 32
     parser = skipWhiteSpace *> stdArgumentsParser <* skipWhiteSpace <* word8 10
 
 -- | Parse @key=value@ pairs passed as a white space separated list. Note that
@@ -249,6 +262,6 @@ fromPairs
     => (Text -> Maybe Text -> m a)
     -> [(Text, Maybe Text)]
     -> m a
-fromPairs f = foldl (\ x -> liftM2 mappend x . uncurry f) $ return mempty
+fromPairs f = foldl' (\x -> liftM2 mappend x . uncurry f) $ return mempty
 
 -- }}} Utility functions ------------------------------------------------------

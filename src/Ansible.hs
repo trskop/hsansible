@@ -1,23 +1,22 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Framework for building up Ansible modules.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (OverloadedStrings)
+-- Portability:  NoImplicitPrelude, OverloadedStrings
 --
 -- Very simple framework that allows building Ansible modules by just following
 -- the type signature of 'moduleMain' type signature.
 module Ansible
     (
     -- * Ansible module
-
       Module
     , moduleMain
-
 
     -- * Errors/failures
 
@@ -25,7 +24,6 @@ module Ansible
     -- interface provided by 'ErrorT' monad transformer and its 'Error' class
     -- for creating and throwing errors.
     , Failure()
-
 
     -- * Module arguments
 
@@ -36,21 +34,24 @@ module Ansible
     , RawArguments(..)
     , StdArguments(..)
 
-
     -- * Utility functions
-
     , castBool
     , fromPairs
     , thenFail
     , otherwiseFail
     )
-    where
+  where
 
 -- {{{ Imports ----------------------------------------------------------------
 
 import Control.Applicative ((<$>))
-import Control.Monad (when)
-import Data.Maybe (isNothing)
+import Control.Monad (Monad((>>), fail, return), when)
+import Data.Bool (Bool, not)
+import Data.Either (Either(Left, Right))
+import Data.Function ((.), ($))
+import Data.List (drop, head, null, take)
+import Data.Maybe (Maybe(Nothing), isNothing)
+import Data.String (String)
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 

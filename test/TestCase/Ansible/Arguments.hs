@@ -1,21 +1,29 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Tests for raw (no parsing) Ansible module arguments
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    unstable
--- Portability:  non-portable (OverloadedStrings, depends on non-portable
---               module)
+-- Portability:  NoImplicitPrelude, OverloadedStrings; depends on non-portable
+--               module.
 --
 -- Tests for raw (no parsing) Ansible module arguments.
 module TestCase.Ansible.Arguments (tests)
-    where
+  where
 
 import Control.Applicative ((<$>))
-import Data.String (fromString)
+import Control.Monad (Monad(return))
+import Data.Bool (Bool(False, True))
+import Data.Either (Either(Right))
+import Data.Eq (Eq((==)))
+import Data.Function ((.), ($))
+import Data.List (map, replicate)
+import Data.Maybe (Maybe(Just, Nothing))
+import Data.String (IsString(fromString), String)
 
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
@@ -138,11 +146,11 @@ castBoolTests =
 
 fromPairsTests =
     [ testCase "empty input" $ Just (Nothing :: Maybe String)
-        @=? fromPairs (\ _ _ -> return (Just "")) []
+        @=? fromPairs (\_ _ -> return (Just "")) []
     , testProperty "identyty" fromPairsIdentityProperty
     ]
   where
     fromPairsIdentityProperty :: [(String, Maybe String)] -> Bool
     fromPairsIdentityProperty kvps =
-        let kvps' = map (\ (k, v) -> (fromString k, fromString <$> v)) kvps
+        let kvps' = map (\(k, v) -> (fromString k, fromString <$> v)) kvps
         in fromPairs (((:) .) . (,)) kvps' [] == kvps'

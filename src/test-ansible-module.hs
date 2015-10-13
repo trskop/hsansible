@@ -1,8 +1,9 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE RecordWildCards #-}
 -- |
 -- Module:       Main
 -- Description:  Simple tool for testing Hsansible based Ansible modules
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -18,20 +19,38 @@
 -- @-c@ or @-C@ options. After doing so it executes copy of the module and
 -- passes argument files to it as command line options.
 module Main (main)
-    where
+  where
+
+import Prelude (error)
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first)
-import Control.Monad (unless, when)
+import Control.Monad (Monad((>>), (>>=), return), mapM_, unless, when)
+import Data.Bool (Bool(False, True))
+import Data.Eq (Eq((/=)))
+import Data.Function ((.), ($), id, flip)
+import Data.List (head, length, map, null, take, unlines)
+import Data.Maybe (Maybe(Just, Nothing))
 import Data.Monoid (Endo(..), First(..), Monoid(..), (<>))
+import Data.String (String)
 import Data.Version (Version, showVersion)
 import System.Console.GetOpt
     (ArgDescr(..), ArgOrder(..), OptDescr(..), getOpt, usageInfo)
 import System.Environment (getArgs, getProgName)
 import System.Exit (exitFailure, exitWith)
-import System.IO (Handle, hPutStr, hPutStrLn, stderr, stdout)
+import System.IO
+    ( Handle
+    , FilePath
+    , IO
+    , hPutStr
+    , hPutStrLn
+    , putStrLn
+    , stderr
+    , stdout
+    , writeFile
+    )
 
-import System.Cmd (rawSystem)
+import System.Process (rawSystem)
 import System.Directory
     ( copyFile
     , emptyPermissions
@@ -69,9 +88,9 @@ printHelp h Config{..} = hPutStrLn h . flip usageInfo options $ unlines
       \ temporary files."
     , ""
     , "Usage:"
-    , "    " ++ progName
-        ++ " [-r] [-p FILE] [-a ARGUMENTS|-A FILE] [-c JSON|-C FILE] FILE"
-    , "    " ++ progName ++ " {-h|-V|--numeric-version|--print-template}"
+    , "    " <> progName
+        <> " [-r] [-p FILE] [-a ARGUMENTS|-A FILE] [-c JSON|-C FILE] FILE"
+    , "    " <> progName <> " {-h|-V|--numeric-version|--print-template}"
     ]
 
 -- | Description of program options.
@@ -134,7 +153,7 @@ options =
 
     printHelp' cfg = printVersion False cfg >> printHelp stdout cfg
     printVersion p Config{..} = putStrLn $
-        (if p then id else (progName ++) . (' ' :)) (showVersion progVersion)
+        (if p then id else (progName <>) . (' ' :)) (showVersion progVersion)
 
 -- | Generate configuration using default values and process environment.
 mkDefaultConfig :: IO Config
@@ -183,7 +202,7 @@ main' Config{..} tmpDir = do
     addPkgConfArg :: [String] -> [String]
     addPkgConfArg = case ghcPackageConf of
         Nothing -> id
-        Just cfg -> (("-package-conf=" ++ cfg) :)
+        Just cfg -> (("-package-conf=" <> cfg) :)
 
     handleArgsFile
         :: (FilePath, Maybe String, Maybe FilePath, String)
@@ -222,7 +241,7 @@ main = do
 
     die :: Config -> [String] -> IO a
     die cfg msgs = do
-        hPutStr stderr . concat $ map ((progName cfg ++ ": ERROR: ") ++) msgs
+        hPutStr stderr . mconcat $ map ((progName cfg <> ": ERROR: ") <>) msgs
         printHelp stderr cfg
         exitFailure
 

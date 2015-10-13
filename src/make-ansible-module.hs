@@ -1,14 +1,15 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 -- |
 -- Module:       Main
 -- Description:  Create Ansible module out of binary executable.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (OverloadedStrings, RecordWildCards)
+-- Portability:  NoImplicitPrelude, OverloadedStrings, RecordWildCards
 --
 -- While Ansible allows it's users to develop modules in any scripting language
 -- it's sometimes useful to be able to use compiled languages. This program
@@ -17,19 +18,35 @@
 -- executable has to follow Ansible module interface, but other than that there
 -- aren't any additional limitations.
 module Main (main)
-    where
+  where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first)
-import Control.Monad (unless, when)
-import Data.String (fromString)
-import Data.Monoid (Endo(..), First(..), Monoid(..))
+import Control.Monad (Monad((>>), (>>=), return), unless, when)
+import Data.Bool (Bool(False, True))
+import Data.Eq (Eq((/=)))
+import Data.Function ((.), ($), flip, id)
+import Data.List (head, length, map, null, take, unlines)
+import Data.Maybe (Maybe(Just, Nothing), maybe)
+import Data.Monoid (Endo(..), First(..), Monoid(..), (<>))
+import Data.String (IsString(fromString), String)
 import Data.Version (Version, showVersion)
 import System.Console.GetOpt
     (ArgDescr(..), ArgOrder(..), OptDescr(..), getOpt, usageInfo)
 import System.Environment (getArgs, getProgName)
 import System.Exit (exitFailure)
-import System.IO (Handle, hPutStr, hPutStrLn, stderr, stdout)
+import System.IO
+    ( Handle
+    , FilePath
+    , IO
+    , hPutStr
+    , hPutStrLn
+    , putStr
+    , putStrLn
+    , readFile
+    , stderr
+    , stdout
+    )
 
 import qualified Data.ByteString as BS (readFile, writeFile, putStr)
 import qualified Data.ByteString.Base64 as Base64 (encode, joinWith)
@@ -62,14 +79,14 @@ printHelp h Config{..} = do
             \ Ansible module interface."
         , ""
         , "Usage:"
-        , "    " ++ progName ++ " [-o OUTPUT_FILE] [-t TEMPLATE_FILE]\
+        , "    " <> progName <> " [-o OUTPUT_FILE] [-t TEMPLATE_FILE]\
             \ [-d DOC_FILE] BINARY_FILE"
-        , "    " ++ progName ++ " {-h|-V|--numeric-version|--print-template}"
+        , "    " <> progName <> " {-h|-V|--numeric-version|--print-template}"
         ]
     hPutStrLn h $ unlines
         [ "Path to Ansible module template:"
         , ""
-        , "    " ++ defaultTemplateFile
+        , "    " <> defaultTemplateFile
         ]
 
 -- | Description of program options.
@@ -111,7 +128,7 @@ options =
     printHelp' cfg = printVersion False cfg >> printHelp stdout cfg
     printTemplate Config{..} = readFile defaultTemplateFile >>= putStr
     printVersion p Config{..} = putStrLn $
-        (if p then id else (progName ++) . (' ' :)) (showVersion progVersion)
+        (if p then id else (progName <>) . (' ' :)) (showVersion progVersion)
 
 -- | Generate configuration using default values and process environment.
 mkDefaultConfig :: IO Config
@@ -167,6 +184,6 @@ main = do
 
     die :: Config -> [String] -> IO a
     die cfg msgs = do
-        hPutStr stderr . concat $ map ((progName cfg ++ ": ERROR: ") ++) msgs
+        hPutStr stderr . mconcat $ map ((progName cfg <> ": ERROR: ") <>) msgs
         printHelp stderr cfg
         exitFailure
