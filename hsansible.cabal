@@ -93,7 +93,7 @@ executable test-ansible-module
     -- ^ Should work with earlier versions, but those have lower upper bound on
     -- filepath and that may be inconsistent with already installed version of
     -- filepath.
-    , filepath >= 1.1 && < 1.4
+    , filepath >= 1.1 && < 1.5
     -- ^ Same boundaries as directory and process packages have.
     , process >= 1.1.0.2 && < 1.4
     -- ^ Lower bound choosen to allow directory package of version 1.2.
