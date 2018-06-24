@@ -85,21 +85,21 @@ example of Ansible playbook that does that.
       # simpler to just have special groups for Debian and Ubuntu systems.
       # Operating system doesn't change that often and therefore it's possible to
       # get away with this and it really does simplify playbooks.
-    
+
       sudo: no
       # ^ It's not necessary to install Hsansible via sudo since it may be
       # installed in user's home directory. Only the haskell-platform installation
       # requires sudo.
-    
+
       vars:
         - hsansible_dir: /home/ansible/hsansible
         - haskell_sandbox: /home/ansible/haskell-sandbox
-    
+
       tasks:
         # Tag "update-hsansible" is here to provide easy way to just update
         # Hsansible by installing newer version. You might want to also run ghc-pkg
         # unregister for older versions, but this playbook doesn't handle that.
-    
+
         - name: Install Haskell Platform
           apt: pkg=haskell-platform state=installed update_cache=yes
           tags: [install-hsansible]
@@ -107,7 +107,7 @@ example of Ansible playbook that does that.
           # without it, if the "hsansible_dir" and "haskell_sandbox" can be created by
           # the user Ansible uses for SSH login.
           sudo: yes
-    
+
         - name: Clone/pull Hsansible repository
           # Depending on your firewall/proxy configuration you might want to swith to
           # "git:" protocol or create a tunel before doing this. Another possibility is
@@ -116,14 +116,14 @@ example of Ansible playbook that does that.
           # you need to provide correct repository URL.
           git: repo=https://github.com/trskop/hsansible.git dest=$hsansible_dir
           tags: [install-hsansible, update-hsansible]
-    
+
         # This step is required if it wasn't ever executed before on target host under
         # the user you'll going to install Hsansible, particulary right after
         # first-time haskell-platform installation.
         - name: Update Cabal package cache
           command: /usr/bin/cabal update
           tags: [install-hsansible]
-    
+
         # Relies on script provided by Hsansible in it's Git repository.
         - name: Install Hsansible in sandbox
           command: $hsansible_dir/tools/sandbox-install.sh --working-dir="$hsansible_dir" "$haskell_sandbox"
