@@ -1,3 +1,5 @@
+**No longer maintained; repository archived**
+
 The Hsansible Package
 =====================
 
